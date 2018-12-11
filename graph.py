@@ -38,4 +38,4 @@ drawGraph(g)
     #     elif((isLinked(g,k,i))):
     #         break
 	
-def yes(wah) #added to rename the the repo 
+def yes(wah) #added to rename the the repo manually
