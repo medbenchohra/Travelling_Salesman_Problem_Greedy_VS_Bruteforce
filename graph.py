@@ -1,6 +1,6 @@
 import networkx as nx
 import matplotlib.pyplot as plt
-import random
+import random as rnd
 
 
 
@@ -9,17 +9,18 @@ def create_graph():
 
 
 def draw_graph(g):
-    nx.draw(g)
+    nx.draw(g, with_labels=True, font_weight='bold')
     plt.show()
 
 
 def generate_random_graph(nb_nodes):
     g = create_graph()
     for i in range(nb_nodes):
-        g.add_node(i, size=65)
+        g.add_node(i)
     for i in range(nb_nodes):
         for k in range(i+1, nb_nodes):
-            g.add_edge(i, k, weight=random.randint(1, 10))
+            random_weight = rnd.randint(1, 10)
+            g.add_edge(i, k, weight=random_weight)
     return g
 
 
