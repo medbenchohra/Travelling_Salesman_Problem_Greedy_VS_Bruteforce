@@ -3,13 +3,18 @@ import matplotlib.pyplot as plt
 import random as rnd
 
 
-
 def create_graph():
     return nx.Graph()
 
 
 def draw_graph(g):
-    nx.draw(g, with_labels=True, font_weight='bold')
+    pos = nx.circular_layout(g)
+
+    edge_labels = dict([((u, v,), d['weight']) for u, v, d in g.edges(data=True)])
+    nx.draw_networkx_edge_labels(g, pos, edge_labels=edge_labels, rotate=False, label_pos=0.25)
+
+    nx.draw(g, pos, with_labels=True, font_weight='bold')
+
     plt.show()
 
 
@@ -35,37 +40,44 @@ currentStack.append(0)
 minStack.append(0)
 
 
-def add_to_min(g,list1, list2, dfs_m_result, nb_nodes):
-    if len(list1) == nb_nodes+1 and g.has_edge(list1[len(list1)-1], list1[1]):
-        list1[0] = list1[0] + g[list1[len(list1)-1]][list1[1]]['weight']
-        if len(list2) == 1:
-            list2[0] = list1[0]
+def add_to_min(g, current_conf, ideal_conf, nb_nodes):
+    if len(current_conf) == nb_nodes+1:
+        last_edge_weight = g[current_conf[len(current_conf)-1]][current_conf[1]]['weight']
+        if len(ideal_conf) == 1:
+            ideal_conf[0] = current_conf[0] + last_edge_weight
             for i in range(nb_nodes):
-                list2.append(list1[i+1])
-        if 0 < list1[0] < list2[0]:
-            for i in range(nb_nodes+1):
-                list2[i] = list1[i]
+                ideal_conf.append(current_conf[i + 1])
+        print("moh fort", currentStack)
+        if (current_conf[0] + last_edge_weight) < ideal_conf[0]:
+            ideal_conf[0] = current_conf[0] + last_edge_weight
+            print("ideal value : ", ideal_conf[0])
+            for i in range(nb_nodes):
+                ideal_conf[i+1] = current_conf[i+1]
+        print("i:", ideal_conf)
 
 
 def dfs(g, i, l, ll, mm):
     mm = mm + 1
     l.append(i)
     for k in range(g.number_of_nodes()):
-        if g.has_edge(i, k) and l.count(k) == 0:
+        if g.has_edge(i, k) and (l.count(k) == 0 or (l.count(k) == 1 and l[0] == k)):
+            print("")
+            # print('l(0) : ', l[0], ' - weight : ', g[i][k]['weight'])
             l[0] = l[0]+g[i][k]['weight']
             dfs(g, k, l, ll, mm)
-            add_to_min(g, l, ll, visited_nodes, g.number_of_nodes())
+            add_to_min(g, l, ll, g.number_of_nodes())
             l.pop()
-            l[0] = l[0]-g[i][k]['weight']
+            l[0] = l[0] - g[i][k]['weight']
             mm = mm - 1
 
 
-mainGraph = generate_random_graph(4)
+mainGraph = generate_random_graph(5)
 draw_graph(mainGraph)
 visited_nodes = 0
 
 dfs(mainGraph, 0, currentStack, minStack, visited_nodes)
 
+print("")
 print(minStack)
 
 
