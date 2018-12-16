@@ -11,7 +11,7 @@ def draw_graph(g):
     pos = nx.circular_layout(g)
 
     edge_labels = dict([((u, v,), d['weight']) for u, v, d in g.edges(data=True)])
-    nx.draw_networkx_edge_labels(g, pos, edge_labels=edge_labels, rotate=False, label_pos=0.25)
+    nx.draw_networkx_edge_labels(g, pos, edge_labels=edge_labels, rotate=False, label_pos=0.2)
 
     nx.draw(g, pos, with_labels=True, font_weight='bold')
 
@@ -24,61 +24,68 @@ def generate_random_graph(nb_nodes):
         g.add_node(i)
     for i in range(nb_nodes):
         for k in range(i+1, nb_nodes):
-            random_weight = rnd.randint(1, 10)
-            g.add_edge(i, k, weight=random_weight)
+            g.add_edge(i, k, weight=rnd.randint(1, 10))
     return g
 
 
 # Initializing current stack
-currentStack = []
+current_cycle = []
 
 # Initializing the stack containing the optimal cycle
-minStack = []
+min_cycle = []
 
-# adding the total value as first element of the two stacks
-currentStack.append(0)
-minStack.append(0)
+# Assigning the cost to the first element
+current_cycle.append(0)
+min_cycle.append(0)
+
+visited_nodes = 0
 
 
-def add_to_min(g, current_conf, ideal_conf, nb_nodes):
-    if len(current_conf) == nb_nodes+1:
+def add_to_min(g, current_conf, ideal_conf):
+    nb_nodes = g.number_of_nodes()
+    if len(current_conf) == nb_nodes + 1:
         last_edge_weight = g[current_conf[len(current_conf)-1]][current_conf[1]]['weight']
         if len(ideal_conf) == 1:
             ideal_conf[0] = current_conf[0] + last_edge_weight
             for i in range(nb_nodes):
                 ideal_conf.append(current_conf[i + 1])
-        print("moh fort", currentStack)
+        print("current : ", current_cycle)
         if (current_conf[0] + last_edge_weight) < ideal_conf[0]:
             ideal_conf[0] = current_conf[0] + last_edge_weight
             print("ideal value : ", ideal_conf[0])
             for i in range(nb_nodes):
                 ideal_conf[i+1] = current_conf[i+1]
-        print("i:", ideal_conf)
+        print("ideal : ", ideal_conf)
 
 
-def dfs(g, i, l, ll, mm):
-    mm = mm + 1
-    l.append(i)
+def brute_force(g, i):
+    global visited_nodes
+    global current_cycle
+
+    visited_nodes = visited_nodes + 1
+    current_cycle.append(i)
     for k in range(g.number_of_nodes()):
-        if g.has_edge(i, k) and (l.count(k) == 0 or (l.count(k) == 1 and l[0] == k)):
+        if g.has_edge(i, k) and (current_cycle.count(k) == 0 or (current_cycle.count(k) == 1 and current_cycle[0] == k)):
             print("")
-            # print('l(0) : ', l[0], ' - weight : ', g[i][k]['weight'])
-            l[0] = l[0]+g[i][k]['weight']
-            dfs(g, k, l, ll, mm)
-            add_to_min(g, l, ll, g.number_of_nodes())
-            l.pop()
-            l[0] = l[0] - g[i][k]['weight']
-            mm = mm - 1
+            current_cycle[0] = current_cycle[0]+g[i][k]['weight']
+            brute_force(g, k)
+            add_to_min(g, current_cycle, min_cycle)
+            current_cycle.pop()
+            current_cycle[0] = current_cycle[0] - g[i][k]['weight']
+            visited_nodes = visited_nodes - 1
 
 
-mainGraph = generate_random_graph(5)
-draw_graph(mainGraph)
-visited_nodes = 0
+# ---------------------------------------------------------------------------------------
+# Main Program
+# ------------
 
-dfs(mainGraph, 0, currentStack, minStack, visited_nodes)
+
+main_graph = generate_random_graph(6)
+brute_force(main_graph, 0)
+draw_graph(main_graph)
 
 print("")
-print(minStack)
+print(min_cycle)
 
 
 
