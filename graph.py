@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import random as rnd
 
 # Set the number of nodes in the randomly generated graph
-nb_nodes = 6
+nb_nodes = 7
 
 
 def create_graph():
@@ -46,6 +46,19 @@ def generate_random_graph():
 estimated_cycle = [0]
 
 
+# Initializing current stack
+current_cycle = []
+
+# Initializing the stack containing the optimal cycle
+min_cycle = []
+
+# Assigning the cost to the first element
+current_cycle.append(0)
+min_cycle.append(0)
+
+visited_nodes = 0
+
+
 def min_adj_cost(g, node):
     adj_weights = []
     neighbors = [n for n in g.neighbors(node)]
@@ -54,7 +67,7 @@ def min_adj_cost(g, node):
     min_cost_node = -1
 
     for i in neighbors:
-        print(estimated_cycle)
+        # print(estimated_cycle)
         estimated_cycle[0] = estimated_cycle[0] - 500
         # print("count ", i, " : ", estimated_cycle.count(i))
         if estimated_cycle.count(i) == 0:
@@ -67,11 +80,45 @@ def min_adj_cost(g, node):
         estimated_cycle[0] = estimated_cycle[0] + 500
 
     min_cost = min(adj_weights)
-    print("min : ", min_cost)
-    print("adj :", adj_weights)
-    print("min node : ", neighbors[adj_weights.index(min_cost)])
+    # print("min : ", min_cost)
+    # print("adj :", adj_weights)
+    # print("min node : ", neighbors[adj_weights.index(min_cost)])
 
     return min_cost, min_cost_node
+
+
+def add_to_min(g, current_conf, ideal_conf):
+    nbr_nodes = g.number_of_nodes()
+    if len(current_conf) == nbr_nodes + 1:
+        last_edge_weight = g[current_conf[len(current_conf)-1]][current_conf[1]]['weight']
+        if len(ideal_conf) == 1:
+            ideal_conf[0] = current_conf[0] + last_edge_weight
+            for i in range(nbr_nodes):
+                ideal_conf.append(current_conf[i + 1])
+        # print("current : ", current_cycle)
+        if (current_conf[0] + last_edge_weight) < ideal_conf[0]:
+            ideal_conf[0] = current_conf[0] + last_edge_weight
+            # print("ideal value : ", ideal_conf[0])
+            for i in range(nbr_nodes):
+                ideal_conf[i+1] = current_conf[i+1]
+        # print("ideal : ", ideal_conf)
+
+
+def bruteforce(g, i):
+    global visited_nodes
+    global current_cycle
+
+    visited_nodes = visited_nodes + 1
+    current_cycle.append(i)
+    for k in range(g.number_of_nodes()):
+        if g.has_edge(i, k) and (current_cycle.count(k) == 0 or (current_cycle.count(k) == 1 and current_cycle[0] == k)):
+            # print("")
+            current_cycle[0] = current_cycle[0]+g[i][k]['weight']
+            bruteforce(g, k)
+            add_to_min(g, current_cycle, min_cycle)
+            current_cycle.pop()
+            current_cycle[0] = current_cycle[0] - g[i][k]['weight']
+            visited_nodes = visited_nodes - 1
 
 
 def greedy(g, i):
@@ -89,11 +136,18 @@ def greedy(g, i):
 
 
 main_graph = generate_random_graph()
-greedy(main_graph, 0)
-draw_graph(main_graph)
+main_graph_bruteforce = main_graph
+main_graph_greedy = main_graph
+
+greedy(main_graph_greedy, 0)
+bruteforce(main_graph_bruteforce, 0)
+
+draw_graph(main_graph_greedy)
+draw_graph(main_graph_bruteforce)
 
 print("")
-print(estimated_cycle)
+print("Estimated Cycle", estimated_cycle)
+print("Minimum Cycle", min_cycle)
 
 
 
