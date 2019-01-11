@@ -97,7 +97,5 @@ print(estimated_cycle)
 
 
 
-# ignore this comment
-
 
 
