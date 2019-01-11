@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import random as rnd
 
 # Set the number of nodes in the randomly generated graph
-nb_nodes = 4
+nb_nodes = 6
 
 
 def create_graph():
