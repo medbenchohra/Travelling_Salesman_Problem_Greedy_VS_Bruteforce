@@ -1,9 +1,10 @@
 import networkx as nx
 import matplotlib.pyplot as plt
 import random as rnd
+import time
 
 # Set the number of nodes in the randomly generated graph
-nb_nodes = 7
+nb_nodes = 9
 
 
 def create_graph():
@@ -27,7 +28,6 @@ def draw_graph(g):
 
     edges_colors = [g[u][v]['color'] for u, v in g.edges]
     nx.draw(g, pos, width=3, node_size=500, node_color='#A0CBE2', edges=g.edges, edge_color=edges_colors, with_labels=True, font_weight='bold')
-
     plt.show()
 
 
@@ -139,15 +139,37 @@ main_graph = generate_random_graph()
 main_graph_bruteforce = main_graph
 main_graph_greedy = main_graph
 
+# Greedy execution
+# ----------------
+
+greedy_time_begin = time.time()
 greedy(main_graph_greedy, 0)
-bruteforce(main_graph_bruteforce, 0)
+greedy_time_end = time.time()
+greedy_time = greedy_time_end - greedy_time_begin
 
 draw_graph(main_graph_greedy)
+
+print("")
+print("Estimated Cycle : " + str(estimated_cycle[1:]))
+print("Cost : " + str(estimated_cycle[0]))
+print("        Time : " + repr(round(1000000*greedy_time, 1)) + " ms")
+print(greedy_time_begin, greedy_time_end, greedy_time)
+
+# Bruteforce execution
+# --------------------
+
+bruteforce_time_begin = time.time()
+bruteforce(main_graph_bruteforce, 0)
+bruteforce_time_end = time.time()
+bruteforce_time = bruteforce_time_end - bruteforce_time_begin
+
 draw_graph(main_graph_bruteforce)
 
 print("")
-print("Estimated Cycle", estimated_cycle)
-print("Minimum Cycle", min_cycle)
+print("")
+print("Optimal Cycle : " + str(min_cycle[1:]))
+print("Cost : " + str(min_cycle[0]))
+print("        Time : " + repr(round(1000*bruteforce_time, 1)) + " ms")
 
 
 
