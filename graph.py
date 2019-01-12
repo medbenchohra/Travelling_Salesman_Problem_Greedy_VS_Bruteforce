@@ -4,7 +4,13 @@ import random as rnd
 import time
 
 # Set the number of nodes in the randomly generated graph
-nb_nodes = 5
+nb_nodes = 9
+
+# Needed variables
+estimated_cycle = [0]
+current_cycle = []
+optimal_cycle = []
+visited_nodes = 0
 
 
 def create_graph():
@@ -42,21 +48,21 @@ def generate_random_graph():
     return g
 
 
-# Create an empty list with, the first is to store the cost
-estimated_cycle = [0]
+def initialize_variables():
+    global estimated_cycle
+    global current_cycle
+    global optimal_cycle
+    global visited_nodes
 
+    estimated_cycle = [0]
+    current_cycle = []
+    optimal_cycle = []
 
-# Initializing current stack
-current_cycle = []
+    visited_nodes = 0
 
-# Initializing the stack containing the optimal cycle
-min_cycle = []
-
-# Assigning the cost to the first element
-current_cycle.append(0)
-min_cycle.append(0)
-
-visited_nodes = 0
+    # Assigning the cost to the first element
+    current_cycle.append(0)
+    optimal_cycle.append(0)
 
 
 def min_adj_cost(g, node):
@@ -115,14 +121,13 @@ def bruteforce(g, i):
             # print("")
             current_cycle[0] = current_cycle[0]+g[i][k]['weight']
             bruteforce(g, k)
-            add_to_min(g, current_cycle, min_cycle)
+            add_to_min(g, current_cycle, optimal_cycle)
             current_cycle.pop()
             current_cycle[0] = current_cycle[0] - g[i][k]['weight']
             visited_nodes = visited_nodes - 1
 
 
 def greedy(g, i):
-    # print(min_adj_cost(g, i)[0])
     estimated_cycle.append(i)
     if len(estimated_cycle) == nb_nodes + 1:
         estimated_cycle[0] = estimated_cycle[0] + g[estimated_cycle[1]][i]['weight']
@@ -135,53 +140,59 @@ def greedy(g, i):
 # ------------
 
 
-main_graph = generate_random_graph()
-main_graph_bruteforce = main_graph
-main_graph_greedy = main_graph
-
 data_file = open("data.txt", "w+")
+data_file.write("Nb Nodes\tBruteforce\tGreedy\n")
 
-# ----------------
-# Greedy execution
-# ----------------
+for nb_nodes in range(5, 11):
+    print(nb_nodes)
+    main_graph = generate_random_graph()
+    main_graph_bruteforce = main_graph
+    main_graph_greedy = main_graph
 
-greedy_time_begin = time.time()
-greedy(main_graph_greedy, 0)
-greedy_time_end = time.time()
-greedy_time = greedy_time_end - greedy_time_begin
+    initialize_variables()
 
-draw_graph(main_graph_greedy)
+    # ----------------
+    # Greedy execution
+    # ----------------
 
-print("")
-print("Estimated Cycle : " + str(estimated_cycle[1:]))
-print("Cost : " + str(estimated_cycle[0]))
-print("        Time : " + repr(round(1000000*greedy_time, 1)) + " ms")
-# print(greedy_time_begin, greedy_time_end, greedy_time)
+    greedy_time_begin = time.clock()
+    greedy(main_graph_greedy, 0)
+    greedy_time_end = time.clock()
+    greedy_time = round(greedy_time_end - greedy_time_begin, 6)
 
-# --------------------
-# Bruteforce execution
-# --------------------
+    draw_graph(main_graph_greedy)
 
-bruteforce_time_begin = time.time()
-bruteforce(main_graph_bruteforce, 0)
-bruteforce_time_end = time.time()
-bruteforce_time = bruteforce_time_end - bruteforce_time_begin
+    print("")
+    print("Estimated Cycle : " + str(estimated_cycle[1:]))
+    print("Cost : " + str(estimated_cycle[0]))
+    print("        Time : " + repr(round(1000*greedy_time, 1)) + " ms")
+    # print(greedy_time_begin, greedy_time_end, greedy_time)
 
-draw_graph(main_graph_bruteforce)
+    # --------------------
+    # Bruteforce execution
+    # --------------------
 
-print("")
-print("")
-print("Optimal Cycle : " + str(min_cycle[1:]))
-print("Cost : " + str(min_cycle[0]))
-print("        Time : " + repr(round(1000*bruteforce_time, 1)) + " ms")
+    bruteforce_time_begin = time.clock()
+    bruteforce(main_graph_bruteforce, 0)
+    bruteforce_time_end = time.clock()
+    bruteforce_time = round(bruteforce_time_end - bruteforce_time_begin, 6)
 
-# --------------------
-# Writing data to file
-# --------------------
+    draw_graph(main_graph_bruteforce)
 
-data_file.write(str(nb_nodes) + " " +
-                str(bruteforce_time) + " " +
-                str(greedy_time) + "\n")
+    print("")
+    print("")
+    print("Optimal Cycle : " + str(optimal_cycle[1:]))
+    print("Cost : " + str(optimal_cycle[0]))
+    print("        Time : " + repr(round(1000*bruteforce_time, 1)) + " ms")
+
+    # --------------------
+    # Writing data to file
+    # --------------------
+
+    data_file.write(str(nb_nodes) + "\t" +
+                    str(1000*bruteforce_time) + "\t" +
+                    str(1000*greedy_time) + "\n")
+
 
 data_file.close()
 
