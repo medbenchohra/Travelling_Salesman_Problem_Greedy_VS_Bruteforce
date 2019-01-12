@@ -1,10 +1,8 @@
 import networkx as nx
+import networkx as nx2
 import matplotlib.pyplot as plt
-import random as rnd
 import time
 
-# Set the number of nodes in the randomly generated graph
-nb_nodes = 9
 
 # Needed variables
 estimated_cycle = [0]
@@ -13,8 +11,8 @@ optimal_cycle = []
 visited_nodes = 0
 
 
-def create_graph():
-    return nx.Graph()
+def create_graph(nt):
+    return nt.Graph()
 
 
 def color_cycle_edges(graph, to_color):
@@ -24,28 +22,30 @@ def color_cycle_edges(graph, to_color):
     graph[to_color[1]][to_color[nodes-1]]['color'] = 'g'
 
 
-def draw_graph(g):
-    color_cycle_edges(g, estimated_cycle)
+def draw_graph(g, cycle, nt):
+    color_cycle_edges(g, cycle)
 
-    pos = nx.circular_layout(g)
+    pos = nt.circular_layout(g)
 
     edges_labels = dict([((u, v,), d['weight']) for u, v, d in g.edges(data=True)])
-    nx.draw_networkx_edge_labels(g, pos, edge_labels=edges_labels, rotate=False, label_pos=0.2)
+    nt.draw_networkx_edge_labels(g, pos, edge_labels=edges_labels, rotate=False, label_pos=0.2)
 
     edges_colors = [g[u][v]['color'] for u, v in g.edges]
-    nx.draw(g, pos, width=3, node_size=500, node_color='#A0CBE2', edges=g.edges, edge_color=edges_colors, with_labels=True, font_weight='bold')
+    nt.draw(g, pos, width=3, node_size=500, node_color='#A0CBE2', edges=g.edges, edge_color=edges_colors, with_labels=True, font_weight='bold')
     plt.show()
 
 
-def generate_random_graph():
-    g = create_graph()
-    for i in range(nb_nodes):
-        g.add_node(i)
-    for i in range(nb_nodes):
-        for k in range(i+1, nb_nodes):
-            g.add_edge(i, k, color='#ECEAE1', weight=rnd.randint(1, 10))
-
-    return g
+def read_graph(g1, g2):
+    nodes = input("\n\n\nNumber of nodes : ")
+    print("")
+    for i in range(nodes):
+        g1.add_node(i)
+        g2.add_node(i)
+    for i in range(nodes):
+        for k in range(i+1, nodes):
+            weight = input("\t - Weight between nodes (" + str(i+1) + ") & (" + str(k+1) + ") : ")
+            g1.add_edge(i, k, color='#ECEAE1', weight=weight)
+            g2.add_edge(i, k, color='#ECEAE1', weight=weight)
 
 
 def initialize_variables():
@@ -129,7 +129,7 @@ def bruteforce(g, i):
 
 def greedy(g, i):
     estimated_cycle.append(i)
-    if len(estimated_cycle) == nb_nodes + 1:
+    if len(estimated_cycle) == g.number_of_nodes() + 1:
         estimated_cycle[0] = estimated_cycle[0] + g[estimated_cycle[1]][i]['weight']
         return
     estimated_cycle[0] = estimated_cycle[0] + min_adj_cost(g, i)[0]
@@ -140,61 +140,47 @@ def greedy(g, i):
 # ------------
 
 
-data_file = open("data.txt", "w+")
-data_file.write("Nb Nodes\tBruteforce\tGreedy\n")
+main_graph_bruteforce = create_graph(nx)
+main_graph_greedy = create_graph(nx2)
+read_graph(main_graph_bruteforce, main_graph_greedy)
 
-for nb_nodes in range(5, 11):
-    print(nb_nodes)
-    main_graph = generate_random_graph()
-    main_graph_bruteforce = main_graph
-    main_graph_greedy = main_graph
+initialize_variables()
+# plt.figure(1)
 
-    initialize_variables()
+# --------------------
+# Bruteforce execution
+# --------------------
 
-    # ----------------
-    # Greedy execution
-    # ----------------
+bruteforce_time_begin = time.clock()
+bruteforce(main_graph_bruteforce, 0)
+bruteforce_time_end = time.clock()
+bruteforce_time = round(bruteforce_time_end - bruteforce_time_begin, 6)
 
-    greedy_time_begin = time.clock()
-    greedy(main_graph_greedy, 0)
-    greedy_time_end = time.clock()
-    greedy_time = round(greedy_time_end - greedy_time_begin, 6)
+draw_graph(main_graph_bruteforce, optimal_cycle, nx)
 
-    draw_graph(main_graph_greedy)
-
-    print("")
-    print("Estimated Cycle : " + str(estimated_cycle[1:]))
-    print("Cost : " + str(estimated_cycle[0]))
-    print("        Time : " + repr(round(1000*greedy_time, 1)) + " ms")
-    # print(greedy_time_begin, greedy_time_end, greedy_time)
-
-    # --------------------
-    # Bruteforce execution
-    # --------------------
-
-    bruteforce_time_begin = time.clock()
-    bruteforce(main_graph_bruteforce, 0)
-    bruteforce_time_end = time.clock()
-    bruteforce_time = round(bruteforce_time_end - bruteforce_time_begin, 6)
-
-    draw_graph(main_graph_bruteforce)
-
-    print("")
-    print("")
-    print("Optimal Cycle : " + str(optimal_cycle[1:]))
-    print("Cost : " + str(optimal_cycle[0]))
-    print("        Time : " + repr(round(1000*bruteforce_time, 1)) + " ms")
-
-    # --------------------
-    # Writing data to file
-    # --------------------
-
-    data_file.write(str(nb_nodes) + "\t" +
-                    str(1000*bruteforce_time) + "\t" +
-                    str(1000*greedy_time) + "\n")
+print("")
+print("")
+print("Optimal Cycle : " + str(optimal_cycle[1:]))
+print("Cost : " + str(optimal_cycle[0]))
+print("        Time : " + repr(round(1000*bruteforce_time, 1)) + " ms")
 
 
-data_file.close()
+# ----------------
+# Greedy execution
+# ----------------
+
+greedy_time_begin = time.clock()
+greedy(main_graph_greedy, 0)
+greedy_time_end = time.clock()
+greedy_time = round(greedy_time_end - greedy_time_begin, 6)
+
+draw_graph(main_graph_greedy, estimated_cycle, nx2)
+
+print("")
+print("Estimated Cycle : " + str(estimated_cycle[1:]))
+print("Cost : " + str(estimated_cycle[0]))
+print("        Time : " + repr(round(1000*greedy_time, 1)) + " ms")
+
 
 
 
