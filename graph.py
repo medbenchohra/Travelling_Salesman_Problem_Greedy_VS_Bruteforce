@@ -73,9 +73,7 @@ def min_adj_cost(g, node):
     min_cost_node = -1
 
     for i in neighbors:
-        # print(estimated_cycle)
         estimated_cycle[0] = estimated_cycle[0] - 500
-        # print("count ", i, " : ", estimated_cycle.count(i))
         if estimated_cycle.count(i) == 0:
             weight = g[node][i]['weight']
             adj_weights.append(weight)
@@ -86,9 +84,6 @@ def min_adj_cost(g, node):
         estimated_cycle[0] = estimated_cycle[0] + 500
 
     min_cost = min(adj_weights)
-    # print("min : ", min_cost)
-    # print("adj :", adj_weights)
-    # print("min node : ", neighbors[adj_weights.index(min_cost)])
 
     return min_cost, min_cost_node
 
@@ -101,13 +96,10 @@ def add_to_min(g, current_conf, ideal_conf):
             ideal_conf[0] = current_conf[0] + last_edge_weight
             for i in range(nbr_nodes):
                 ideal_conf.append(current_conf[i + 1])
-        # print("current : ", current_cycle)
         if (current_conf[0] + last_edge_weight) < ideal_conf[0]:
             ideal_conf[0] = current_conf[0] + last_edge_weight
-            # print("ideal value : ", ideal_conf[0])
             for i in range(nbr_nodes):
                 ideal_conf[i+1] = current_conf[i+1]
-        # print("ideal : ", ideal_conf)
 
 
 def bruteforce(g, i):
@@ -118,7 +110,6 @@ def bruteforce(g, i):
     current_cycle.append(i)
     for k in range(g.number_of_nodes()):
         if g.has_edge(i, k) and (current_cycle.count(k) == 0 or (current_cycle.count(k) == 1 and current_cycle[0] == k)):
-            # print("")
             current_cycle[0] = current_cycle[0]+g[i][k]['weight']
             bruteforce(g, k)
             add_to_min(g, current_cycle, optimal_cycle)
@@ -141,10 +132,10 @@ def greedy(g, i):
 
 
 data_file = open("data.txt", "w+")
-data_file.write("Nb Nodes\tBruteforce\tGreedy\n")
+data_file.write("Nodes Bruteforce Greedy\n")
 
-for nb_nodes in range(5, 11):
-    print(nb_nodes)
+for nb_nodes in range(12, 25):
+    print("For " + str(nb_nodes) + " nodes :")
     main_graph = generate_random_graph()
     main_graph_bruteforce = main_graph
     main_graph_greedy = main_graph
@@ -160,8 +151,6 @@ for nb_nodes in range(5, 11):
     greedy_time_end = time.clock()
     greedy_time = round(greedy_time_end - greedy_time_begin, 6)
 
-    draw_graph(main_graph_greedy)
-
     print("")
     print("Estimated Cycle : " + str(estimated_cycle[1:]))
     print("Cost : " + str(estimated_cycle[0]))
@@ -172,25 +161,23 @@ for nb_nodes in range(5, 11):
     # Bruteforce execution
     # --------------------
 
-    bruteforce_time_begin = time.clock()
-    bruteforce(main_graph_bruteforce, 0)
-    bruteforce_time_end = time.clock()
-    bruteforce_time = round(bruteforce_time_end - bruteforce_time_begin, 6)
-
-    draw_graph(main_graph_bruteforce)
-
-    print("")
-    print("")
-    print("Optimal Cycle : " + str(optimal_cycle[1:]))
-    print("Cost : " + str(optimal_cycle[0]))
-    print("        Time : " + repr(round(1000*bruteforce_time, 1)) + " ms")
+    # bruteforce_time_begin = time.clock()
+    # bruteforce(main_graph_bruteforce, 0)
+    # bruteforce_time_end = time.clock()
+    # bruteforce_time = round(bruteforce_time_end - bruteforce_time_begin, 6)
+    #
+    # print("")
+    # print("")
+    # print("Optimal Cycle : " + str(optimal_cycle[1:]))
+    # print("Cost : " + str(optimal_cycle[0]))
+    # print("        Time : " + repr(round(1000*bruteforce_time, 1)) + " ms")
 
     # --------------------
     # Writing data to file
     # --------------------
 
-    data_file.write(str(nb_nodes) + "\t" +
-                    str(1000*bruteforce_time) + "\t" +
+    data_file.write(str(nb_nodes) + " " +
+                    # str(1000*bruteforce_time) + " " +
                     str(1000*greedy_time) + "\n")
 
 
