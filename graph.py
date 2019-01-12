@@ -4,7 +4,7 @@ import random as rnd
 import time
 
 # Set the number of nodes in the randomly generated graph
-nb_nodes = 9
+nb_nodes = 5
 
 
 def create_graph():
@@ -139,6 +139,9 @@ main_graph = generate_random_graph()
 main_graph_bruteforce = main_graph
 main_graph_greedy = main_graph
 
+data_file = open("data.txt", "w+")
+
+# ----------------
 # Greedy execution
 # ----------------
 
@@ -153,8 +156,9 @@ print("")
 print("Estimated Cycle : " + str(estimated_cycle[1:]))
 print("Cost : " + str(estimated_cycle[0]))
 print("        Time : " + repr(round(1000000*greedy_time, 1)) + " ms")
-print(greedy_time_begin, greedy_time_end, greedy_time)
+# print(greedy_time_begin, greedy_time_end, greedy_time)
 
+# --------------------
 # Bruteforce execution
 # --------------------
 
@@ -171,6 +175,15 @@ print("Optimal Cycle : " + str(min_cycle[1:]))
 print("Cost : " + str(min_cycle[0]))
 print("        Time : " + repr(round(1000*bruteforce_time, 1)) + " ms")
 
+# --------------------
+# Writing data to file
+# --------------------
+
+data_file.write(str(nb_nodes) + " " +
+                str(bruteforce_time) + " " +
+                str(greedy_time) + "\n")
+
+data_file.close()
 
 
 
