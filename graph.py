@@ -100,10 +100,3 @@ draw_graph(main_graph)
 print("")
 print(min_cycle)
 
-
-
-
-# ignore this comment
-
-
-
