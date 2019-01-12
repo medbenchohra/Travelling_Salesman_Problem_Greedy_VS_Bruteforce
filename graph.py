@@ -54,9 +54,7 @@ def min_adj_cost(g, node):
     min_cost_node = -1
 
     for i in neighbors:
-        print(estimated_cycle)
         estimated_cycle[0] = estimated_cycle[0] - 500
-        # print("count ", i, " : ", estimated_cycle.count(i))
         if estimated_cycle.count(i) == 0:
             weight = g[node][i]['weight']
             adj_weights.append(weight)
@@ -67,15 +65,11 @@ def min_adj_cost(g, node):
         estimated_cycle[0] = estimated_cycle[0] + 500
 
     min_cost = min(adj_weights)
-    print("min : ", min_cost)
-    print("adj :", adj_weights)
-    print("min node : ", neighbors[adj_weights.index(min_cost)])
 
     return min_cost, min_cost_node
 
 
 def greedy(g, i):
-    # print(min_adj_cost(g, i)[0])
     estimated_cycle.append(i)
     if len(estimated_cycle) == nb_nodes + 1:
         estimated_cycle[0] = estimated_cycle[0] + g[estimated_cycle[1]][i]['weight']
