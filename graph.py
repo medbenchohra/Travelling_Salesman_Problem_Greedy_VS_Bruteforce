@@ -11,6 +11,11 @@ current_cycle = []
 visited_nodes = 0
 
 
+def update_cycle_node_list_by_labels_name(a_list):
+    for i in range(1,len(a_list)):
+        a_list[i]+= 1;
+    return a_list
+
 def create_graph(nt):
     return nt.Graph()
 
@@ -159,6 +164,7 @@ draw_graph(main_graph_bruteforce, optimal_cycle, nx)
 print("")
 print("")
 print("Optimal Cycle : " + str(optimal_cycle[1:]))
+print("Optimal labeled Cycle" + str(update_cycle_node_list_by_labels_name(optimal_cycle)[1:]))
 print("Cost : " + str(optimal_cycle[0]))
 print("        Time : " + repr(round(1000*bruteforce_time, 1)) + " ms")
 
@@ -176,5 +182,6 @@ draw_graph(main_graph_greedy, estimated_cycle, nx2)
 
 print("")
 print("Estimated Cycle : " + str(estimated_cycle[1:]))
+print("Estimated labeled Cycle" + str(update_cycle_node_list_by_labels_name(estimated_cycle)[1:]))
 print("Cost : " + str(estimated_cycle[0]))
 print("        Time : " + repr(round(1000*greedy_time, 1)) + " ms")
