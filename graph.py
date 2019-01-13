@@ -15,6 +15,7 @@ def create_graph(nt):
     return nt.Graph()
 
 
+
 def color_cycle_edges(graph, to_color):
     nodes = len(to_color)
     for i in range(nodes - 2):
@@ -24,26 +25,26 @@ def color_cycle_edges(graph, to_color):
 
 def draw_graph(g, cycle, nt):
     color_cycle_edges(g, cycle)
-
     pos = nt.circular_layout(g)
-
     edges_labels = dict([((u, v,), d['weight']) for u, v, d in g.edges(data=True)])
+    nodes_labels = dict([(i,i+1) for i in range(g.number_of_nodes())])
+    nt.draw_networkx_labels(g, pos, labels=nodes_labels)
     nt.draw_networkx_edge_labels(g, pos, edge_labels=edges_labels, rotate=False, label_pos=0.2)
+    nt.draw_networkx(g, pos, with_labels= False)
     edges_colors = [g[u][v]['color'] for u, v in g.edges]
     nt.draw(g, pos, width=3, node_size=500, node_color='#A0CBE2', edges=g.edges,
-            edge_color=edges_colors, with_labels=True, font_weight='bold')
+            edge_color=edges_colors, with_labels=False, font_weight='bold')
     plt.show()
 
 
 def read_graph(g1, g2):
-    nodes = input("\n\n\nNumber of nodes : ")
-    print("")
+    nodes = int(input("\n\n\nNumber of nodes : "))
     for i in range(nodes):
         g1.add_node(i)
         g2.add_node(i)
     for i in range(nodes):
         for k in range(i+1, nodes):
-            weight = input("\t - Weight between nodes (" + str(i+1) + ") & (" + str(k+1) + ") : ")
+            weight = int(input("\t - Weight between nodes (" + str(i+1) + ") & (" + str(k+1) + ") : "))
             g1.add_edge(i, k, color='#ECEAE1', weight=weight)
             g2.add_edge(i, k, color='#ECEAE1', weight=weight)
 
