@@ -156,9 +156,9 @@ initialize_variables()
 # Bruteforce execution
 # --------------------
 
-bruteforce_time_begin = time.perf_counter()
+bruteforce_time_begin = time.clock()
 bruteforce(main_graph_bruteforce, 0)
-bruteforce_time_end = time.perf_counter()
+bruteforce_time_end = time.clock()
 bruteforce_time = round(bruteforce_time_end - bruteforce_time_begin, 6)
 draw_graph(main_graph_bruteforce, optimal_cycle, nx)
 
@@ -174,9 +174,9 @@ print("        Time : " + repr(round(1000*bruteforce_time, 1)) + " ms")
 # Greedy execution
 # ----------------
 
-greedy_time_begin = time.perf_counter()
+greedy_time_begin = time.clock()
 greedy(main_graph_greedy, 0)
-greedy_time_end = time.perf_counter()
+greedy_time_end = time.clock()
 greedy_time = round(greedy_time_end - greedy_time_begin, 6)
 
 draw_graph(main_graph_greedy, estimated_cycle, nx2)
