@@ -36,14 +36,14 @@ def draw_graph(g, cycle, nt):
 
 
 def read_graph(g1, g2):
-    nodes = input("\n\n\nNumber of nodes : ")
+    nodes = int(input("\n\n\nNumber of nodes : "))
     print("")
     for i in range(nodes):
         g1.add_node(i)
         g2.add_node(i)
     for i in range(nodes):
         for k in range(i+1, nodes):
-            weight = input("\t - Weight between nodes (" + str(i+1) + ") & (" + str(k+1) + ") : ")
+            weight = int(input("\t - Weight between nodes (" + str(i+1) + ") & (" + str(k+1) + ") : "))
             g1.add_edge(i, k, color='#ECEAE1', weight=weight)
             g2.add_edge(i, k, color='#ECEAE1', weight=weight)
 
@@ -149,9 +149,9 @@ initialize_variables()
 # Bruteforce execution
 # --------------------
 
-bruteforce_time_begin = time.clock()
+bruteforce_time_begin = time.perf_counter()
 bruteforce(main_graph_bruteforce, 0)
-bruteforce_time_end = time.clock()
+bruteforce_time_end = time.perf_counter()
 bruteforce_time = round(bruteforce_time_end - bruteforce_time_begin, 6)
 draw_graph(main_graph_bruteforce, optimal_cycle, nx)
 
@@ -166,9 +166,9 @@ print("        Time : " + repr(round(1000*bruteforce_time, 1)) + " ms")
 # Greedy execution
 # ----------------
 
-greedy_time_begin = time.clock()
+greedy_time_begin = time.perf_counter()
 greedy(main_graph_greedy, 0)
-greedy_time_end = time.clock()
+greedy_time_end = time.perf_counter()
 greedy_time = round(greedy_time_end - greedy_time_begin, 6)
 
 draw_graph(main_graph_greedy, estimated_cycle, nx2)
