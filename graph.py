@@ -11,6 +11,12 @@ current_cycle = []
 visited_nodes = 0
 
 
+def update_cycle_node_list_by_labels_name(a_list):
+    for i in range(1,len(a_list)):
+        a_list[i]+= 1;
+    return a_list
+
+
 def create_graph(nt):
     return nt.Graph()
 
@@ -24,14 +30,15 @@ def color_cycle_edges(graph, to_color):
 
 def draw_graph(g, cycle, nt):
     color_cycle_edges(g, cycle)
-
     pos = nt.circular_layout(g)
-
     edges_labels = dict([((u, v,), d['weight']) for u, v, d in g.edges(data=True)])
+    nodes_labels = dict([(i,i+1) for i in range(g.number_of_nodes())])
+    nt.draw_networkx_labels(g, pos, labels=nodes_labels)
     nt.draw_networkx_edge_labels(g, pos, edge_labels=edges_labels, rotate=False, label_pos=0.2)
+    nt.draw_networkx(g, pos, with_labels= False)
     edges_colors = [g[u][v]['color'] for u, v in g.edges]
     nt.draw(g, pos, width=3, node_size=500, node_color='#A0CBE2', edges=g.edges,
-            edge_color=edges_colors, with_labels=True, font_weight='bold')
+            edge_color=edges_colors, with_labels=False, font_weight='bold')
     plt.show()
 
 
@@ -158,6 +165,7 @@ draw_graph(main_graph_bruteforce, optimal_cycle, nx)
 print("")
 print("")
 print("Optimal Cycle : " + str(optimal_cycle[1:]))
+print("Optimal labeled Cycle" + str(update_cycle_node_list_by_labels_name(optimal_cycle)[1:]))
 print("Cost : " + str(optimal_cycle[0]))
 print("        Time : " + repr(round(1000*bruteforce_time, 1)) + " ms")
 
@@ -175,5 +183,6 @@ draw_graph(main_graph_greedy, estimated_cycle, nx2)
 
 print("")
 print("Estimated Cycle : " + str(estimated_cycle[1:]))
+print("Estimated labeled Cycle" + str(update_cycle_node_list_by_labels_name(estimated_cycle)[1:]))
 print("Cost : " + str(estimated_cycle[0]))
 print("        Time : " + repr(round(1000*greedy_time, 1)) + " ms")
